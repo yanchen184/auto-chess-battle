@@ -19,20 +19,74 @@
 ## 技術架構
 
 - 前端：React
-- 後端/數據庫：Firebase
+- 後端/數據庫：Firebase (Firestore + Realtime Database)
 - 狀態管理：React Context API
 - 路由：React Router
 
 ## 如何開始
 
-1. 複製儲存庫
-2. 安裝依賴：`npm install`
-3. 啟動開發服務器：`npm start`
+1. 複製儲存庫：
+   ```
+   git clone https://github.com/yanchen184/auto-chess-battle.git
+   cd auto-chess-battle
+   ```
+
+2. 安裝依賴：
+   ```
+   npm install
+   ```
+
+3. 啟動開發服務器：
+   ```
+   npm start
+   ```
+
 4. 在瀏覽器打開 [http://localhost:3000](http://localhost:3000)
+
+## Firebase 配置
+
+本項目使用 Firebase 進行後端服務，已經配置好了相關檔案：
+
+- `src/firebase/config.js`: Firebase Web App 配置
+- `firebase.json`: Firebase 專案配置
+- `firestore.rules`: Firestore 安全規則
+- `database.rules.json`: Realtime Database 安全規則
+- `firestore.indexes.json`: Firestore 索引配置
+
+如果需要部署到自己的 Firebase 專案，請按照以下步驟操作：
+
+1. 安裝 Firebase CLI：
+   ```
+   npm install -g firebase-tools
+   ```
+
+2. 登入 Firebase：
+   ```
+   firebase login
+   ```
+
+3. 初始化您的 Firebase 專案：
+   ```
+   firebase init
+   ```
+
+4. 部署到 Firebase：
+   ```
+   firebase deploy
+   ```
+
+## 部署到 GitHub Pages
+
+本項目已配置好 GitHub Actions 自動部署到 GitHub Pages。每次推送到 `main` 分支後，GitHub Actions 會自動構建並部署到 `gh-pages` 分支。
+
+如需手動部署，可以執行：
+```
+npm run deploy
+```
 
 ## 目前功能
 
-- 角色選擇
+- 角色選擇（戰士、法師、盜賊）
 - 遊戲對戰
 - 卡牌選擇與使用
 - 實時對戰
