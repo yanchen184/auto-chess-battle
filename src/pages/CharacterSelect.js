@@ -1,214 +1,287 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
-import BaseCharacters from '../models/character';
+import { useNavigate } from 'react-router-dom';
 import { useGame } from '../contexts/GameContext';
-import { createGame, joinGame } from '../firebase/gameService';
+import { getAllCharacters } from '../models/characters';
+import { createGame, joinGame } from '../services/gameService';
 
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+// Styled Components
+const PageContainer = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
   padding: 20px;
+  text-align: center;
 `;
 
 const Title = styled.h1`
-  color: #61dafb;
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 20px;
+`;
+
+const Subtitle = styled.h2`
+  font-size: 1.5rem;
+  color: #555;
   margin-bottom: 30px;
 `;
 
 const CharacterGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 20px;
-  max-width: 900px;
   margin-bottom: 30px;
 `;
 
 const CharacterCard = styled.div`
-  background-color: ${props => props.selected ? '#3a506b' : '#1a1d24'};
-  border: 2px solid ${props => props.selected ? '#61dafb' : 'transparent'};
+  background-color: ${({ selected, theme }) => (selected ? theme : '#fff')};
+  color: ${({ selected }) => (selected ? '#fff' : '#333')};
+  border: 2px solid ${({ theme }) => theme};
   border-radius: 8px;
-  padding: 15px;
+  padding: 20px;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   
   &:hover {
     transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
   }
 `;
 
-const CharacterName = styled.h2`
-  color: #61dafb;
+const Avatar = styled.div`
+  font-size: 3rem;
+  margin-bottom: 10px;
+`;
+
+const CharacterName = styled.h3`
+  font-size: 1.5rem;
   margin-bottom: 10px;
 `;
 
 const CharacterDescription = styled.p`
-  color: #ffffff;
   margin-bottom: 15px;
 `;
 
-const CharacterStats = styled.div`
+const Stats = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
+  margin-bottom: 15px;
 `;
 
-const StatItem = styled.div`
-  text-align: center;
+const Stat = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
-const StatLabel = styled.div`
-  color: #aaaaaa;
-  font-size: 0.8rem;
-  margin-bottom: 5px;
-`;
-
-const StatValue = styled.div`
-  color: #ffffff;
+const StatValue = styled.span`
+  font-size: 1.2rem;
   font-weight: bold;
 `;
 
-const Button = styled.button`
-  background-color: #61dafb;
-  color: #282c34;
-  border: none;
-  padding: 12px 24px;
+const StatLabel = styled.span`
+  font-size: 0.9rem;
+  color: ${({ selected }) => (selected ? '#eee' : '#777')};
+`;
+
+const GameOptions = styled.div`
+  display: flex;
+  flex-direction: column;
+  max-width: 500px;
+  margin: 0 auto;
+  gap: 15px;
+`;
+
+const Input = styled.input`
+  padding: 12px;
+  border: 1px solid #ccc;
   border-radius: 4px;
-  font-size: 1.1rem;
-  cursor: pointer;
-  transition: background-color 0.3s;
+  font-size: 1rem;
+`;
+
+const Button = styled.button`
+  background-color: ${({ disabled, theme }) => (disabled ? '#ccc' : theme || '#4dabf7')};
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+  transition: background-color 0.3s ease;
   
   &:hover {
-    background-color: #4fa8d1;
-  }
-  
-  &:disabled {
-    background-color: #4a4a4a;
-    cursor: not-allowed;
+    background-color: ${({ disabled, theme }) => (disabled ? '#ccc' : theme ? theme + 'dd' : '#339af0')};
   }
 `;
 
-const LoadingMessage = styled.div`
-  color: #61dafb;
-  font-size: 1.2rem;
-  margin-top: 20px;
+const ErrorMessage = styled.p`
+  color: #e03131;
+  margin-top: 10px;
 `;
 
 const CharacterSelect = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const { currentPlayer, setCurrentPlayer, setSelectedCharacter, setCurrentGame } = useGame();
-  const [selectedCharacterId, setSelectedCharacterId] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const { 
+    currentPlayer, 
+    selectCharacter, 
+    selectedCharacter,
+    setCurrentGame
+  } = useGame();
+  
+  const [characters, setCharacters] = useState([]);
+  const [gameId, setGameId] = useState('');
+  const [playerName, setPlayerName] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   
-  // Check if player info exists
+  // 載入角色資料
   useEffect(() => {
-    if (!currentPlayer) {
-      navigate('/');
+    setCharacters(getAllCharacters());
+    
+    // 從 localStorage 獲取玩家名稱
+    if (currentPlayer?.name) {
+      setPlayerName(currentPlayer.name);
     }
-  }, [currentPlayer, navigate]);
+  }, [currentPlayer]);
   
-  // Handle character selection
-  const handleSelectCharacter = (characterId) => {
-    setSelectedCharacterId(characterId);
+  // 選擇角色
+  const handleSelectCharacter = (character) => {
+    selectCharacter(character);
   };
   
-  // Handle confirm selection and start/join game
-  const handleConfirmSelection = async () => {
-    if (!selectedCharacterId) {
+  // 創建遊戲
+  const handleCreateGame = async () => {
+    if (!selectedCharacter) {
       setError('請選擇一個角色');
       return;
     }
     
-    setIsLoading(true);
+    if (!playerName.trim()) {
+      setError('請輸入玩家名稱');
+      return;
+    }
     
     try {
-      // Find selected character
-      const character = BaseCharacters.find(char => char.id === selectedCharacterId);
+      setIsLoading(true);
+      setError('');
       
-      // Update player with character selection
-      const updatedPlayer = {
-        ...currentPlayer,
-        character
-      };
+      const game = await createGame({
+        creatorId: currentPlayer.id,
+        creatorName: playerName,
+        creatorCharacter: selectedCharacter.id
+      });
       
-      setCurrentPlayer(updatedPlayer);
-      setSelectedCharacter(character);
-      
-      let gameId;
-      
-      // If player is host, create a new game
-      if (currentPlayer.isHost) {
-        gameId = await createGame(updatedPlayer);
-      } 
-      // If player is guest, join existing game
-      else {
-        const existingGameId = location.state?.gameId;
-        if (!existingGameId) {
-          throw new Error('遊戲ID不存在');
-        }
-        
-        await joinGame(existingGameId, updatedPlayer);
-        gameId = existingGameId;
-      }
-      
-      // Set current game ID and navigate to game page
-      setCurrentGame({ id: gameId });
-      navigate(`/game/${gameId}`);
-      
+      setCurrentGame(game);
+      navigate(`/game/${game.id}`);
     } catch (error) {
-      console.error('Error in character selection:', error);
-      setError(error.message || '發生錯誤，請重試');
+      console.error('創建遊戲錯誤:', error);
+      setError('創建遊戲失敗，請重試');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  // 加入遊戲
+  const handleJoinGame = async () => {
+    if (!selectedCharacter) {
+      setError('請選擇一個角色');
+      return;
+    }
+    
+    if (!playerName.trim()) {
+      setError('請輸入玩家名稱');
+      return;
+    }
+    
+    if (!gameId.trim()) {
+      setError('請輸入遊戲ID');
+      return;
+    }
+    
+    try {
+      setIsLoading(true);
+      setError('');
+      
+      const game = await joinGame(gameId, {
+        playerId: currentPlayer.id,
+        playerName: playerName,
+        playerCharacter: selectedCharacter.id
+      });
+      
+      setCurrentGame(game);
+      navigate(`/game/${game.id}`);
+    } catch (error) {
+      console.error('加入遊戲錯誤:', error);
+      setError('加入遊戲失敗，請檢查遊戲ID是否正確');
+    } finally {
       setIsLoading(false);
     }
   };
   
   return (
-    <Container>
+    <PageContainer>
       <Title>選擇你的角色</Title>
+      <Subtitle>每個角色都有獨特的能力和卡牌</Subtitle>
       
       <CharacterGrid>
-        {BaseCharacters.map(character => (
-          <CharacterCard 
+        {characters.map((character) => (
+          <CharacterCard
             key={character.id}
-            selected={selectedCharacterId === character.id}
-            onClick={() => handleSelectCharacter(character.id)}
+            onClick={() => handleSelectCharacter(character)}
+            selected={selectedCharacter?.id === character.id}
+            theme={character.color}
           >
+            <Avatar>{character.avatar}</Avatar>
             <CharacterName>{character.name}</CharacterName>
             <CharacterDescription>{character.description}</CharacterDescription>
-            <CharacterStats>
-              <StatItem>
-                <StatLabel>血量</StatLabel>
-                <StatValue>{character.health}</StatValue>
-              </StatItem>
-              <StatItem>
-                <StatLabel>魔量</StatLabel>
-                <StatValue>{character.mana}</StatValue>
-              </StatItem>
-            </CharacterStats>
+            <Stats>
+              <Stat>
+                <StatValue>❤️ {character.health}</StatValue>
+                <StatLabel selected={selectedCharacter?.id === character.id}>生命值</StatLabel>
+              </Stat>
+              <Stat>
+                <StatValue>🔮 {character.mana}</StatValue>
+                <StatLabel selected={selectedCharacter?.id === character.id}>魔力值</StatLabel>
+              </Stat>
+            </Stats>
           </CharacterCard>
         ))}
       </CharacterGrid>
       
-      {error && <div style={{ color: '#ff6b6b', marginBottom: '15px' }}>{error}</div>}
-      
-      <Button 
-        onClick={handleConfirmSelection}
-        disabled={!selectedCharacterId || isLoading}
-      >
-        {isLoading ? '處理中...' : '確認選擇'}
-      </Button>
-      
-      {isLoading && currentPlayer?.isHost && (
-        <LoadingMessage>創建遊戲中，請稍等...</LoadingMessage>
-      )}
-      
-      {isLoading && !currentPlayer?.isHost && (
-        <LoadingMessage>加入遊戲中，請稍等...</LoadingMessage>
-      )}
-    </Container>
+      <GameOptions>
+        <Input
+          type="text"
+          placeholder="輸入你的名稱"
+          value={playerName}
+          onChange={(e) => setPlayerName(e.target.value)}
+        />
+        
+        <Button 
+          onClick={handleCreateGame}
+          disabled={isLoading || !selectedCharacter || !playerName}
+          theme={selectedCharacter?.color}
+        >
+          {isLoading ? '處理中...' : '創建新遊戲'}
+        </Button>
+        
+        <Input
+          type="text"
+          placeholder="輸入遊戲ID加入現有遊戲"
+          value={gameId}
+          onChange={(e) => setGameId(e.target.value)}
+        />
+        
+        <Button 
+          onClick={handleJoinGame}
+          disabled={isLoading || !selectedCharacter || !playerName || !gameId}
+          theme={selectedCharacter?.color}
+        >
+          {isLoading ? '處理中...' : '加入遊戲'}
+        </Button>
+        
+        {error && <ErrorMessage>{error}</ErrorMessage>}
+      </GameOptions>
+    </PageContainer>
   );
 };
 
