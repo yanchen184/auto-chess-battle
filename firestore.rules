@@ -1,0 +1,30 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 遊戲數據的規則
+    match /games/{gameId} {
+      allow read: if true;  // 允許所有人讀取遊戲數據
+      allow create: if true; // 允許所有人創建遊戲
+      allow update: if true; // 允許所有人更新遊戲
+      allow delete: if false; // 不允許刪除遊戲
+    }
+    
+    // 玩家數據的規則
+    match /players/{playerId} {
+      allow read: if true;
+      allow write: if true;
+    }
+    
+    // 角色數據的規則
+    match /characters/{characterId} {
+      allow read: if true;
+      allow write: if false; // 玩家不應該能夠修改角色數據
+    }
+    
+    // 卡牌數據的規則
+    match /cards/{cardId} {
+      allow read: if true;
+      allow write: if false; // 玩家不應該能夠修改卡牌數據
+    }
+  }
+}
