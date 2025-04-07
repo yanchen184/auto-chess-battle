@@ -241,7 +241,6 @@ const CardSelection = ({
     // 根據鼠標位置決定彈出位置
     const rect = event.currentTarget.getBoundingClientRect();
     const windowHeight = window.innerHeight;
-    const topSpace = rect.top;
     const bottomSpace = windowHeight - rect.bottom;
     
     setPopoverPosition(bottomSpace < 200 ? 'top' : 'bottom');
