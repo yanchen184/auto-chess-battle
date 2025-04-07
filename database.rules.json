@@ -1,0 +1,30 @@
+{
+  "rules": {
+    ".read": true,
+    ".write": true,
+    "games": {
+      "$gameId": {
+        ".read": true,
+        ".write": true,
+        "players": {
+          "$playerId": {
+            ".read": true,
+            ".write": true
+          }
+        },
+        "board": {
+          ".read": true,
+          ".write": true
+        },
+        "turnActions": {
+          ".read": true,
+          ".write": true
+        },
+        "status": {
+          ".read": true,
+          ".write": true
+        }
+      }
+    }
+  }
+}
