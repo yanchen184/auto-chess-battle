@@ -12,7 +12,7 @@ import {
   limit
 } from 'firebase/firestore';
 import { ref, set, onValue, update } from 'firebase/database';
-import { db, rtdb } from '../firebase/config';
+import { db, realtimeDb } from '../firebase/config';
 import { getCardById } from '../models/cards';
 import { getCharacterById } from '../models/characters';
 
@@ -46,7 +46,7 @@ export const createGame = async (gameData) => {
     };
     
     // 創建實時遊戲狀態
-    const rtGameRef = ref(rtdb, `games/${gameRef.id}`);
+    const rtGameRef = ref(realtimeDb, `games/${gameRef.id}`);
     await set(rtGameRef, {
       id: gameRef.id,
       status: 'waiting',
@@ -109,7 +109,7 @@ export const joinGame = async (gameId, playerData) => {
     });
     
     // 更新實時資料庫中的遊戲狀態
-    const rtGameRef = ref(rtdb, `games/${gameId}`);
+    const rtGameRef = ref(realtimeDb, `games/${gameId}`);
     const characterData = getCharacterById(playerData.playerCharacter);
     
     // 添加第二個玩家並更新遊戲狀態
@@ -163,7 +163,7 @@ export const getGame = async (gameId) => {
 
 // 監聽遊戲狀態變化
 export const subscribeToGame = (gameId, callback) => {
-  const rtGameRef = ref(rtdb, `games/${gameId}`);
+  const rtGameRef = ref(realtimeDb, `games/${gameId}`);
   return onValue(rtGameRef, (snapshot) => {
     const gameData = snapshot.val();
     if (gameData) {
@@ -193,7 +193,7 @@ export const selectCards = async (gameId, playerId, cardIds) => {
       throw new Error('參數錯誤');
     }
     
-    const rtGameRef = ref(rtdb, `games/${gameId}`);
+    const rtGameRef = ref(realtimeDb, `games/${gameId}`);
     
     // 更新玩家選擇的卡牌和準備狀態
     await update(rtGameRef, {
@@ -212,7 +212,7 @@ export const selectCards = async (gameId, playerId, cardIds) => {
 // 執行回合
 export const executeRound = async (gameId) => {
   try {
-    const rtGameRef = ref(rtdb, `games/${gameId}`);
+    const rtGameRef = ref(realtimeDb, `games/${gameId}`);
     
     // 在Firestore中記錄回合移動
     const gameMoveRef = await addDoc(collection(db, GAME_MOVES_COLLECTION), {
