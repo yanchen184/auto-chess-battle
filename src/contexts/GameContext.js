@@ -54,6 +54,7 @@ export const GameProvider = ({ children }) => {
     });
     
     return () => unsubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   
   // 處理玩家設置
