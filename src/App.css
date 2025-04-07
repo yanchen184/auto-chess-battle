@@ -1,0 +1,54 @@
+.App {
+  text-align: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.App-header {
+  background-color: #1a1d24;
+  padding: 10px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.version-info {
+  font-size: 14px;
+  color: #61dafb;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.page {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.features {
+  text-align: left;
+  margin: 30px 0;
+  background-color: #1a1d24;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+h1 {
+  color: #61dafb;
+}
+
+h2 {
+  color: #61dafb;
+}
+
+.construction {
+  color: #ffc107;
+  font-style: italic;
+  margin-top: 30px;
+}
