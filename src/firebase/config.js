@@ -4,19 +4,18 @@ import { getFirestore } from 'firebase/firestore';
 import { getDatabase } from 'firebase/database';
 import { getAuth } from 'firebase/auth';
 
-// We'll use a demo configuration for now
-// Replace with your actual Firebase config in production
+// Firebase 配置信息
 const firebaseConfig = {
-  apiKey: "AIzaSyDemoApiKey123456789",
-  authDomain: "demo-project.firebaseapp.com",
-  projectId: "demo-project",
-  storageBucket: "demo-project.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "1:123456789:web:abcdef1234567890",
-  databaseURL: "https://demo-project-default-rtdb.firebaseio.com"
+  apiKey: "AIzaSyBnZK-a8tTKuM-4F-23ZISaf1tlftfRHaA",
+  authDomain: "j70717-3800e.firebaseapp.com",
+  databaseURL: "https://j70717-3800e.firebaseio.com",
+  projectId: "j70717-3800e",
+  storageBucket: "j70717-3800e.firebasestorage.app",
+  messagingSenderId: "1069494517672",
+  appId: "1:1069494517672:web:1234567890abcdef" // 注意：這是一個預設值，因為web appId不在google-services.json中
 };
 
-// Initialize Firebase or use a mock if in GitHub Pages environment
+// 初始化 Firebase
 let app, db, realtimeDb, auth;
 
 try {
@@ -24,9 +23,12 @@ try {
   db = getFirestore(app);
   realtimeDb = getDatabase(app);
   auth = getAuth(app);
+  console.log('Firebase 初始化成功');
 } catch (error) {
-  console.log('Using mock Firebase for demo purposes');
-  // Mock objects for GitHub Pages demo
+  console.error('Firebase 初始化失敗:', error);
+  
+  // 提供一個降級處理，在初始化失敗時使用模擬對象
+  console.log('使用模擬 Firebase 數據');
   app = {};
   db = {
     collection: () => ({
@@ -44,11 +46,13 @@ try {
     ref: () => ({
       set: () => Promise.resolve(),
       update: () => Promise.resolve(),
-      on: () => {}
+      on: () => {},
+      once: () => Promise.resolve({ val: () => null })
     })
   };
   auth = {
-    onAuthStateChanged: () => {}
+    onAuthStateChanged: () => {},
+    signInAnonymously: () => Promise.resolve({ user: { uid: 'anonymous-user' } })
   };
 }
 
