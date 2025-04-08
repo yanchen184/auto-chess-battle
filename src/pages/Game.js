@@ -221,7 +221,8 @@ const Game = () => {
         
         // 監聽遊戲文檔
         const unsubscribeDoc = subscribeToGameDoc(gameId, (doc) => {
-          setGameDoc(doc);
+          // 註釋掉：不需要保存遊戲文檔
+          // setGameDoc(doc);
         });
         
         // 抽取可用卡牌
