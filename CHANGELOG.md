@@ -2,6 +2,13 @@
 
 所有對此項目的顯著更改都將記錄在此文件中。
 
+## [0.2.3] - 2025-04-08
+
+### 修復
+- 修復 CharacterSelect.js 中的 "Cannot read properties of null (reading 'id')" 錯誤
+- 增強用戶驗證檢查，確保 currentPlayer 存在時才允許創建或加入遊戲
+- 改進 GameContext.js 中的用戶數據初始化流程，增加無效數據處理
+
 ## [0.2.2] - 2025-04-08
 
 ### 修復

@@ -161,6 +161,11 @@ const CharacterSelect = () => {
       return;
     }
     
+    if (!currentPlayer) {
+      setError('用戶身份驗證失敗，請重新整理頁面');
+      return;
+    }
+    
     try {
       setIsLoading(true);
       setError('');
@@ -195,6 +200,11 @@ const CharacterSelect = () => {
     
     if (!gameId.trim()) {
       setError('請輸入遊戲ID');
+      return;
+    }
+    
+    if (!currentPlayer) {
+      setError('用戶身份驗證失敗，請重新整理頁面');
       return;
     }
     
@@ -258,7 +268,7 @@ const CharacterSelect = () => {
         
         <Button 
           onClick={handleCreateGame}
-          disabled={isLoading || !selectedCharacter || !playerName}
+          disabled={isLoading || !selectedCharacter || !playerName || !currentPlayer}
           theme={selectedCharacter?.color}
         >
           {isLoading ? '處理中...' : '創建新遊戲'}
@@ -273,7 +283,7 @@ const CharacterSelect = () => {
         
         <Button 
           onClick={handleJoinGame}
-          disabled={isLoading || !selectedCharacter || !playerName || !gameId}
+          disabled={isLoading || !selectedCharacter || !playerName || !gameId || !currentPlayer}
           theme={selectedCharacter?.color}
         >
           {isLoading ? '處理中...' : '加入遊戲'}

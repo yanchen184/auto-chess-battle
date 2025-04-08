@@ -18,12 +18,30 @@ export const GameProvider = ({ children }) => {
     const initAuth = async () => {
       try {
         setLoading(true);
+        setError(null);
+        
         // 嘗試從本地存儲獲取用戶數據
         const storedUser = localStorage.getItem('gameUser');
         
         if (storedUser) {
-          const parsedUser = JSON.parse(storedUser);
-          setCurrentPlayer(parsedUser);
+          try {
+            const parsedUser = JSON.parse(storedUser);
+            if (parsedUser && parsedUser.id) { // 確保採用有效的使用者資料
+              setCurrentPlayer(parsedUser);
+            } else {
+              // 如果本地存儲的用戶無效，創建一個新的
+              throw new Error('Invalid stored user data');
+            }
+          } catch (parseError) {
+            // 處理無效的 JSON 或無效的用戶資料
+            const userCredential = await signInAnonymously(auth);
+            const newUser = {
+              id: userCredential.user.uid,
+              isAnonymous: true
+            };
+            setCurrentPlayer(newUser);
+            localStorage.setItem('gameUser', JSON.stringify(newUser));
+          }
         } else {
           // 如果沒有本地存儲的用戶，創建一個匿名用戶
           const userCredential = await signInAnonymously(auth);
