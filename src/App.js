@@ -13,7 +13,7 @@ function App() {
       <HashRouter>
         <div className="App">
           <header className="App-header">
-            <div className="version-info">v0.1.0</div>
+            <div className="version-info">v0.2.3</div>
           </header>
           <main>
             <Routes>
