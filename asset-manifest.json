@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/auto-chess-battle/static/css/main.7f0f02c1.css",
-    "main.js": "/auto-chess-battle/static/js/main.2cb336db.js",
+    "main.js": "/auto-chess-battle/static/js/main.92001531.js",
     "index.html": "/auto-chess-battle/index.html",
     "main.7f0f02c1.css.map": "/auto-chess-battle/static/css/main.7f0f02c1.css.map",
-    "main.2cb336db.js.map": "/auto-chess-battle/static/js/main.2cb336db.js.map"
+    "main.92001531.js.map": "/auto-chess-battle/static/js/main.92001531.js.map"
   },
   "entrypoints": [
     "static/css/main.7f0f02c1.css",
-    "static/js/main.2cb336db.js"
+    "static/js/main.92001531.js"
   ]
 }
