@@ -149,7 +149,7 @@ const Admin = () => {
   
   const [activeTab, setActiveTab] = useState('games');
   const [games, setGames] = useState([]);
-  const [characters, setCharacters] = useState([]);
+  // const [characters, setCharacters] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   

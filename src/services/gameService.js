@@ -587,17 +587,18 @@ export const checkGameOver = (players) => {
 // 獲取玩家最近的遊戲
 export const getPlayerGames = async (playerId, status = 'all', limitCount = 10) => {
   try {
-    let gamesQuery;
-    
+    // 構建查詢對象
     if (status === 'all') {
-      gamesQuery = query(
+      // 查詢所有狀態的遊戲
+      query(
         collection(db, GAMES_COLLECTION),
         where('players', 'array-contains', playerId),
         orderBy('updatedAt', 'desc'),
         limit(limitCount)
       );
     } else {
-      gamesQuery = query(
+      // 查詢特定狀態的遊戲
+      query(
         collection(db, GAMES_COLLECTION),
         where('players', 'array-contains', playerId),
         where('status', '==', status),
@@ -618,7 +619,8 @@ export const getPlayerGames = async (playerId, status = 'all', limitCount = 10) 
 // 獲取遊戲歷史
 export const getGameHistory = async (gameId) => {
   try {
-    const movesQuery = query(
+    // 構建查詢對象
+    query(
       collection(db, GAME_MOVES_COLLECTION),
       where('gameId', '==', gameId),
       orderBy('roundNumber', 'asc')

@@ -13,8 +13,8 @@ import {
   drawCardsForPlayer,
   selectCards,
   executeRound,
-  isValidMove,
-  calculateAttackEffect,
+  // isValidMove,
+  // calculateAttackEffect,
   checkGameOver
 } from '../services/gameService';
 
@@ -166,11 +166,11 @@ const WinnerAvatar = styled.div`
 const Game = () => {
   const { gameId } = useParams();
   const navigate = useNavigate();
-  const { currentPlayer, currentGame, setCurrentGame } = useGame();
+  const { currentPlayer, /* currentGame, */ setCurrentGame } = useGame();
   
   // 遊戲狀態
   const [gameState, setGameState] = useState(null);
-  const [gameDoc, setGameDoc] = useState(null);
+  // const [gameDoc, setGameDoc] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
@@ -180,13 +180,13 @@ const Game = () => {
   
   // 遊戲邏輯
   const [round, setRound] = useState(0);
-  const [highlightedCells, setHighlightedCells] = useState([]);
-  const [selectedCard, setSelectedCard] = useState(null);
-  const [effectCells, setEffectCells] = useState([]);
+  const [highlightedCells/* , setHighlightedCells */] = useState([]);
+  const [selectedCard/* , setSelectedCard */] = useState(null);
+  const [effectCells/* , setEffectCells */] = useState([]);
   const [gameOver, setGameOver] = useState(false);
   
   // 計時器
-  const [timer, setTimer] = useState(null);
+  const [timer/* , setTimer */] = useState(null);
   
   // 初始化遊戲
   useEffect(() => {
@@ -247,7 +247,7 @@ const Game = () => {
     };
     
     initGame();
-  }, [gameId, currentPlayer, setCurrentGame]);
+  }, [gameId, currentPlayer, setCurrentGame, round]);
   
   // 當選擇卡牌時
   const handleSelectCard = (card) => {
